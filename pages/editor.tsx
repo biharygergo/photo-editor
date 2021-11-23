@@ -39,6 +39,19 @@ const FormLabel = (props: { for: string; text: string }) => {
 const FormGroup = (props: { children: React.ReactNode[] }) => (
   <div className="py-2 flex flex-col">{props.children}</div>
 );
+
+type EditorState = {
+  imageWidth: number;
+  imageHeight: number;
+  imageBlur: number;
+  isGrayScaled: boolean;
+  imageId: string;
+};
+
+const saveState = (state: EditorState) => {
+  localStorage.setItem("savedState", JSON.stringify(state));
+};
+
 const Editor: NextPage = () => {
   const router = useRouter();
   const editedImageId = router.query["id"] as string;
@@ -48,17 +61,40 @@ const Editor: NextPage = () => {
 
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const [imageWidth, setImageWidth] = useState<number>(0);
-  const [imageHeight, setImageHeight] = useState<number>(0);
-  const [imageBlur, setImageBlur] = useState<number>(0);
-  const [isGrayscaled, setIsGrayscaled] = useState<boolean>(false);
+  const [editorState, setEditorState] = useState<EditorState>({
+    imageBlur: 0,
+    imageHeight: 0,
+    imageWidth: 0,
+    isGrayScaled: false,
+    imageId: editedImageId,
+  });
 
   useEffect(() => {
-    if (containerRef.current) {
-      setImageWidth(containerRef.current.offsetWidth);
-      setImageHeight(containerRef.current.offsetHeight);
+    const savedItem = localStorage.getItem("savedState");
+    if (savedItem && editedImageId) {
+      const savedState = JSON.parse(savedItem) as EditorState;
+      if (savedState.imageId === editedImageId) {
+        setEditorState(savedState);
+      }
     }
-  }, [containerRef]);
+  }, [editedImageId]);
+
+  useEffect(() => {
+    if (containerRef.current && editedImageId) {
+      setEditorState((currentState) => ({
+        ...currentState,
+        imageId: editedImageId,
+        imageWidth: containerRef.current?.offsetWidth || 0,
+        imageHeight: containerRef.current?.offsetHeight || 0,
+      }));
+    }
+  }, [containerRef, editedImageId]);
+
+  useEffect(() => {
+    if (editorState.imageId) {
+      saveState(editorState);
+    }
+  }, [editorState]);
 
   return (
     <div>
@@ -75,11 +111,11 @@ const Editor: NextPage = () => {
               ref={containerRef}
             >
               <ImageEditor
-                width={imageWidth}
-                height={imageHeight}
+                width={editorState.imageWidth}
+                height={editorState.imageHeight}
                 image={image}
-                isGrayscaled={isGrayscaled}
-                blurRadius={imageBlur}
+                isGrayscaled={editorState.isGrayScaled}
+                blurRadius={editorState.imageBlur}
               />
             </div>
           </div>
@@ -87,25 +123,34 @@ const Editor: NextPage = () => {
             <FormGroup>
               <FormLabel for="width" text="Width" />
               <NumberFormControl
-                value={imageWidth}
-                setValue={setImageWidth}
+                value={editorState.imageWidth}
+                setValue={(value) =>
+                  setEditorState({ ...editorState, imageWidth: value })
+                }
                 id="height"
               />
             </FormGroup>
             <FormGroup>
               <FormLabel for="height" text="Height" />
               <NumberFormControl
-                value={imageHeight}
-                setValue={setImageHeight}
+                value={editorState.imageHeight}
+                setValue={(value) =>
+                  setEditorState({ ...editorState, imageHeight: value })
+                }
                 id="width"
               />
             </FormGroup>
             <FormGroup>
               <FormLabel for="grayscale" text="Grayscale" />
               <Button
-                text={isGrayscaled ? "Disable" : "Enable"}
+                text={editorState.isGrayScaled ? "Disable" : "Enable"}
                 disabled={false}
-                onClick={() => setIsGrayscaled(!isGrayscaled)}
+                onClick={() =>
+                  setEditorState({
+                    ...editorState,
+                    isGrayScaled: !editorState.isGrayScaled,
+                  })
+                }
               />
             </FormGroup>
             <FormGroup>
@@ -114,8 +159,10 @@ const Editor: NextPage = () => {
                 type="range"
                 min="0"
                 max="10"
-                value={imageBlur}
-                onChange={(e) => setImageBlur(+e.target.value)}
+                value={editorState.imageBlur}
+                onChange={(e) =>
+                  setEditorState({ ...editorState, imageBlur: +e.target.value })
+                }
                 id="blur"
                 className="slider mt-2"
               />
