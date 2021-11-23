@@ -1,15 +1,14 @@
 import type { NextPage } from "next";
 import Image from "next/image";
 import Head from "next/head";
-import { useEffect, useState } from "react";
 import { useGetPicturesQuery } from "../store/services/picsum";
 import { useRouter } from "next/dist/client/router";
-import { Button } from "./components/Button";
+import { Button } from "../components/Button";
 
 const Home: NextPage = () => {
   const router = useRouter();
   const currentPage = +(router.query["page"] || 1);
-  const { data, error, isLoading } = useGetPicturesQuery(currentPage);
+  const { data, error } = useGetPicturesQuery(currentPage);
 
   const setCurrentPage = (page: number) => {
     router.push(`/?page=${page}`, undefined, { shallow: true });
@@ -52,6 +51,11 @@ const Home: NextPage = () => {
             </div>
           ))}
         </div>
+        {error && (
+          <h1 className="text-xl text-center text-red-400">
+            Something went wrong. Please try refreshing the page.
+          </h1>
+        )}
         <div className="py-5 flex items-center justify-center">
           <Button
             onClick={() => setCurrentPage(currentPage - 1)}
