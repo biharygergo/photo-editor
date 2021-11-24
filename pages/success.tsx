@@ -16,7 +16,7 @@ const Success: NextPage = () => {
   return (
     <div>
       <Head>
-        <title>Edit Image | Photo Editor</title>
+        <title>Success | Photo Editor</title>
       </Head>
       <main>
         <Title step={"Step 3"} title={"Success"} />
