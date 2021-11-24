@@ -81,15 +81,21 @@ const Editor: NextPage = () => {
   }, [editedImageId]);
 
   useEffect(() => {
-    if (containerRef.current && editedImageId) {
+    if (containerRef.current && editedImageId && data) {
+      const imageRatio = Math.min(
+        containerRef.current?.offsetWidth / data.width,
+        containerRef.current?.offsetHeight / data.height
+      );
+      const initialHeight = imageRatio * data.height;
+      const initialWidth = imageRatio * data.width;
       setEditorState((currentState) => ({
         ...currentState,
         imageId: editedImageId,
-        imageWidth: containerRef.current?.offsetWidth || 0,
-        imageHeight: containerRef.current?.offsetHeight || 0,
+        imageWidth: Math.round(initialWidth),
+        imageHeight: Math.round(initialHeight),
       }));
     }
-  }, [containerRef, editedImageId]);
+  }, [containerRef, editedImageId, data]);
 
   useEffect(() => {
     if (editorState.imageId) {

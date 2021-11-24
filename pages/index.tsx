@@ -47,6 +47,7 @@ const Home: NextPage = () => {
                   blurDataURL={`https://picsum.photos/id/${image.id}/10/10`}
                   objectFit="cover"
                   objectPosition="center"
+                  sizes="50wv"
                 />
               </div>
               <label className="py-2 text-1xl font-medium text-center bg-gray-200 rounded-b cursor-pointer group-hover:bg-green-400 transition-colors">
