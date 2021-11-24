@@ -8,6 +8,7 @@ import {
 import { useRouter } from "next/dist/client/router";
 import { Button } from "../components/Button";
 import { Title } from "../components/Title";
+import { motion } from "framer-motion";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -37,7 +38,10 @@ const Home: NextPage = () => {
               key={image.id}
               onClick={() => selectImageToEdit(image)}
             >
-              <div className="h-64 w-full relative">
+              <motion.div
+                className="h-64 w-full relative"
+                layoutId={`imageWrapper-${image.id}`}
+              >
                 <Image
                   src={`https://picsum.photos/id/${image.id}/400`}
                   className="rounded-t"
@@ -49,7 +53,7 @@ const Home: NextPage = () => {
                   objectPosition="center"
                   sizes="50wv"
                 />
-              </div>
+              </motion.div>
               <label className="py-2 text-1xl font-medium text-center bg-gray-200 rounded-b cursor-pointer group-hover:bg-green-400 transition-colors">
                 {image.author}
               </label>

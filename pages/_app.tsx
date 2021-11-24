@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { store } from "../store/store";
+import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -13,7 +14,11 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta name="description" content="Cool photo editor with canvas API" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Component {...pageProps} />
+      <AnimateSharedLayout type="crossfade">
+        <AnimatePresence>
+          <Component {...pageProps} />
+        </AnimatePresence>
+      </AnimateSharedLayout>
     </Provider>
   );
 }

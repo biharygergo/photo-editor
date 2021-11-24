@@ -2,12 +2,14 @@ import { NextPage } from "next";
 import { useRouter } from "next/dist/client/router";
 import useImage from "use-image";
 import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 import Head from "next/head";
 import { useGetPictureQuery } from "../store/services/picsum";
 import { Title } from "../components/Title";
 import { Button } from "../components/Button";
 import dynamic from "next/dynamic";
+import { motion } from "framer-motion";
 const ImageEditor = dynamic(() => import("../components/ImageEditor"), {
   ssr: false,
 });
@@ -122,33 +124,54 @@ const Editor: NextPage = () => {
       </Head>
       <main>
         <Title step={"Step 2"} title={"Edit Image"} />
+
         <div className="flex flex-col md:flex-row py-10 px-5">
           <div
             className="flex-auto w-full md:w-8/12 flex items-center justify-center"
             style={{ minHeight: 500 }}
           >
-            <div
-              className="rounded shadow w-full overflow-hidden mx-auto my-auto"
+            <motion.div
+              className="rounded shadow w-full overflow-hidden mx-auto my-auto relative"
               style={{
                 height: 600,
                 maxWidth: originalBounds.width,
                 maxHeight: originalBounds.height,
               }}
               ref={containerRef}
+              layoutId={`imageWrapper-${editedImageId}`}
             >
-              <ImageEditor
-                width={editorState.imageWidth}
-                height={editorState.imageHeight}
-                image={image}
-                isGrayscaled={editorState.isGrayScaled}
-                blurRadius={editorState.imageBlur}
-                setDownloadCallback={(callback) => {
-                  downloadCallback.current = callback;
-                }}
-              />
-            </div>
+              {image ? (
+                <ImageEditor
+                  width={editorState.imageWidth}
+                  height={editorState.imageHeight}
+                  image={image}
+                  isGrayscaled={editorState.isGrayScaled}
+                  blurRadius={editorState.imageBlur}
+                  setDownloadCallback={(callback) => {
+                    downloadCallback.current = callback;
+                  }}
+                />
+              ) : (
+                <Image
+                  src={`https://picsum.photos/id/${editedImageId}/400`}
+                  layout="fill"
+                  placeholder="blur"
+                  blurDataURL={`https://picsum.photos/id/${editedImageId}/10/10`}
+                  objectFit="cover"
+                  objectPosition="center"
+                  sizes="50wv"
+                  alt="Currently edited image"
+                />
+              )}
+            </motion.div>
           </div>
-          <div className="flex-auto w-full md:w-4/12 flex flex-col px-5">
+          <motion.div
+            className="flex-auto w-full md:w-4/12 flex flex-col px-5"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ delay: 0.3 }}
+          >
             <FormGroup>
               <FormLabel for="width" text="Width (px)" />
               <NumberFormControl
@@ -190,7 +213,10 @@ const Editor: NextPage = () => {
                 max="10"
                 value={editorState.imageBlur}
                 onChange={(e) =>
-                  setEditorState({ ...editorState, imageBlur: +e.target.value })
+                  setEditorState({
+                    ...editorState,
+                    imageBlur: +e.target.value,
+                  })
                 }
                 id="blur"
                 className="slider mt-2"
@@ -202,7 +228,7 @@ const Editor: NextPage = () => {
               onClick={() => downloadCallback.current?.()}
               className="mt-auto py-5"
             />
-          </div>
+          </motion.div>
         </div>
       </main>
     </div>
