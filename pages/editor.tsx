@@ -3,13 +3,13 @@ import { useRouter } from "next/dist/client/router";
 import useImage from "use-image";
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-
+import { motion } from "framer-motion";
+import dynamic from "next/dynamic";
 import Head from "next/head";
+
 import { useGetPictureQuery } from "../store/services/picsum";
 import { Title } from "../components/Title";
 import { Button } from "../components/Button";
-import dynamic from "next/dynamic";
-import { motion } from "framer-motion";
 const ImageEditor = dynamic(() => import("../components/ImageEditor"), {
   ssr: false,
 });
