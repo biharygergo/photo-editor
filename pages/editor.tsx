@@ -60,7 +60,6 @@ const Editor: NextPage = () => {
   const [image] = useImage(data?.download_url || "", "anonymous");
 
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const editorRef = useRef<EditorForwardedHandle | null>(null);
   const downloadCallback = useRef<() => void>();
 
   const [editorState, setEditorState] = useState<EditorState>({
@@ -126,7 +125,7 @@ const Editor: NextPage = () => {
           </div>
           <div className="flex-auto w-full md:w-4/12 flex flex-col px-5">
             <FormGroup>
-              <FormLabel for="width" text="Width" />
+              <FormLabel for="width" text="Width (px)" />
               <NumberFormControl
                 value={editorState.imageWidth}
                 setValue={(value) =>
@@ -136,7 +135,7 @@ const Editor: NextPage = () => {
               />
             </FormGroup>
             <FormGroup>
-              <FormLabel for="height" text="Height" />
+              <FormLabel for="height" text="Height (px)" />
               <NumberFormControl
                 value={editorState.imageHeight}
                 setValue={(value) =>
