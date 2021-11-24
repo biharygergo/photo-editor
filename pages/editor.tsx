@@ -10,37 +10,14 @@ import Head from "next/head";
 import { useGetPictureQuery } from "../store/services/picsum";
 import { Title } from "../components/Title";
 import { Button } from "../components/Button";
+import {
+  FormGroup,
+  FormLabel,
+  NumberFormControl,
+} from "../components/FormControls";
 const ImageEditor = dynamic(() => import("../components/ImageEditor"), {
   ssr: false,
 });
-
-const NumberFormControl = (props: {
-  id: string;
-  value: number;
-  setValue: (value: number) => void;
-}) => {
-  return (
-    <input
-      id={props.id}
-      type="number"
-      value={props.value}
-      onChange={(e) => props.setValue(+e.target.value)}
-      className="rounded border border-green-400 py-2 px-4"
-    ></input>
-  );
-};
-
-const FormLabel = (props: { for: string; text: string }) => {
-  return (
-    <label htmlFor={props.for} className="font-light mb-2">
-      {props.text}
-    </label>
-  );
-};
-
-const FormGroup = (props: { children: React.ReactNode[] }) => (
-  <div className="pb-3 flex flex-col">{props.children}</div>
-);
 
 type EditorState = {
   imageWidth: number;
@@ -48,6 +25,11 @@ type EditorState = {
   imageBlur: number;
   isGrayScaled: boolean;
   imageId: string;
+};
+
+type Bounds = {
+  width: number;
+  height: number;
 };
 
 const initialState: EditorState = {
@@ -58,8 +40,27 @@ const initialState: EditorState = {
   imageId: "",
 };
 
+const initialBounds = {
+  width: 800,
+  height: 600,
+};
+
 const saveState = (state: EditorState) => {
   localStorage.setItem("savedState", JSON.stringify(state));
+};
+
+const calculateImageBounds = (
+  containerBounds: Bounds,
+  imageBounds: Bounds
+): Bounds => {
+  const imageRatio = Math.min(
+    containerBounds.width / imageBounds.width,
+    containerBounds.height / imageBounds.height
+  );
+  const height = imageRatio * imageBounds.height;
+  const width = imageRatio * imageBounds.width;
+
+  return { height, width };
 };
 
 const Editor: NextPage = () => {
@@ -73,23 +74,18 @@ const Editor: NextPage = () => {
   const downloadCallback = useRef<() => void>();
 
   const [editorState, setEditorState] = useState<EditorState>(initialState);
-  const [originalBounds, setOriginalBounds] = useState<{
-    width: number;
-    height: number;
-  }>({
-    width: 800,
-    height: 600,
-  });
+  const [originalBounds, setOriginalBounds] = useState<Bounds>(initialBounds);
 
   useEffect(() => {
     if (containerRef.current && editedImageId && data) {
-      const imageRatio = Math.min(
-        containerRef.current?.offsetWidth / data.width,
-        containerRef.current?.offsetHeight / data.height
+      const bounds = calculateImageBounds(
+        {
+          width: containerRef.current.offsetWidth,
+          height: containerRef.current.offsetHeight,
+        },
+        { width: data.width, height: data.height }
       );
-      const initialHeight = imageRatio * data.height;
-      const initialWidth = imageRatio * data.width;
-      setOriginalBounds({ width: initialWidth, height: initialHeight });
+      setOriginalBounds(bounds);
 
       let loadedFromSave = false;
       const savedItem = localStorage.getItem("savedState");
@@ -100,12 +96,13 @@ const Editor: NextPage = () => {
           loadedFromSave = true;
         }
       }
+  
       if (!loadedFromSave) {
         setEditorState((currentState) => ({
           ...currentState,
           imageId: editedImageId,
-          imageWidth: Math.round(initialWidth),
-          imageHeight: Math.round(initialHeight),
+          imageWidth: Math.round(bounds.width),
+          imageHeight: Math.round(bounds.height),
         }));
       }
     }

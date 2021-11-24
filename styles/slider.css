@@ -14,5 +14,3 @@ input[type="range"]::-webkit-slider-thumb {
   background: rgb(52, 211, 153);
   cursor: pointer; /* Cursor on hover */
 }
-.slider input[type="”range”"]::-webkit-slider-thumb:hover {
-}
