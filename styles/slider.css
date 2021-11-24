@@ -1,0 +1,18 @@
+input[type="range"] {
+  -webkit-appearance: none; /* Override default CSS styles */
+  appearance: none;
+  background: rgb(52, 211, 153);
+  height: 1.5px;
+  outline: none; /* Remove outline */
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  width: 20px; /* Set a specific slider handle width */
+  height: 20px; /* Slider handle height */
+  border-radius: 50%;
+  background: rgb(52, 211, 153);
+  cursor: pointer; /* Cursor on hover */
+}
+.slider input[type="”range”"]::-webkit-slider-thumb:hover {
+}
