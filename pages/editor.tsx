@@ -3,13 +3,13 @@ import { useRouter } from "next/dist/client/router";
 import useImage from "use-image";
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-
+import { motion } from "framer-motion";
+import dynamic from "next/dynamic";
 import Head from "next/head";
+
 import { useGetPictureQuery } from "../store/services/picsum";
 import { Title } from "../components/Title";
 import { Button } from "../components/Button";
-import dynamic from "next/dynamic";
-import { motion } from "framer-motion";
 const ImageEditor = dynamic(() => import("../components/ImageEditor"), {
   ssr: false,
 });
@@ -122,7 +122,7 @@ const Editor: NextPage = () => {
       <Head>
         <title>Edit Image | Photo Editor</title>
       </Head>
-      <main>
+      <main className="max-w-screen-xl mx-auto">
         <Title step={"Step 2"} title={"Edit Image"} />
 
         <div className="flex flex-col md:flex-row py-10 px-5">
@@ -131,7 +131,7 @@ const Editor: NextPage = () => {
             style={{ minHeight: 500 }}
           >
             <motion.div
-              className="rounded shadow w-full overflow-hidden mx-auto my-auto relative"
+              className="rounded shadow-md w-full overflow-hidden mx-auto my-auto relative"
               style={{
                 height: 600,
                 maxWidth: originalBounds.width,
@@ -166,7 +166,7 @@ const Editor: NextPage = () => {
             </motion.div>
           </div>
           <motion.div
-            className="flex-auto w-full md:w-4/12 flex flex-col px-5"
+            className="flex-auto w-full md:w-4/12 flex flex-col p-5 shadow-md rounded md:max-w-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

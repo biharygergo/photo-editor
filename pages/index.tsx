@@ -1,6 +1,8 @@
 import type { NextPage } from "next";
 import Image from "next/image";
 import Head from "next/head";
+import { motion } from "framer-motion";
+
 import {
   Image as PicsumImage,
   useGetPicturesQuery,
@@ -8,7 +10,6 @@ import {
 import { useRouter } from "next/dist/client/router";
 import { Button } from "../components/Button";
 import { Title } from "../components/Title";
-import { motion } from "framer-motion";
 
 const Home: NextPage = () => {
   const router = useRouter();

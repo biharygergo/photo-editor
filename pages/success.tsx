@@ -1,8 +1,9 @@
 import { NextPage } from "next";
 import Head from "next/head";
+import { motion } from "framer-motion";
+
 import { Title } from "../components/Title";
 import { Button } from "../components/Button";
-import { motion } from "framer-motion";
 import { useRouter } from "next/dist/client/router";
 
 const Success: NextPage = () => {
@@ -15,7 +16,7 @@ const Success: NextPage = () => {
   return (
     <div>
       <Head>
-        <title>Edit Image | Photo Editor</title>
+        <title>Success | Photo Editor</title>
       </Head>
       <main>
         <Title step={"Step 3"} title={"Success"} />
