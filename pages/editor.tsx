@@ -37,7 +37,7 @@ const FormLabel = (props: { for: string; text: string }) => {
 };
 
 const FormGroup = (props: { children: React.ReactNode[] }) => (
-  <div className="py-2 flex flex-col">{props.children}</div>
+  <div className="pb-3 flex flex-col">{props.children}</div>
 );
 
 type EditorState = {
@@ -46,6 +46,14 @@ type EditorState = {
   imageBlur: number;
   isGrayScaled: boolean;
   imageId: string;
+};
+
+const initialState: EditorState = {
+  imageBlur: 0,
+  imageHeight: 0,
+  imageWidth: 0,
+  isGrayScaled: false,
+  imageId: "",
 };
 
 const saveState = (state: EditorState) => {
@@ -62,23 +70,14 @@ const Editor: NextPage = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const downloadCallback = useRef<() => void>();
 
-  const [editorState, setEditorState] = useState<EditorState>({
-    imageBlur: 0,
-    imageHeight: 0,
-    imageWidth: 0,
-    isGrayScaled: false,
-    imageId: editedImageId,
+  const [editorState, setEditorState] = useState<EditorState>(initialState);
+  const [originalBounds, setOriginalBounds] = useState<{
+    width: number;
+    height: number;
+  }>({
+    width: 800,
+    height: 600,
   });
-
-  useEffect(() => {
-    const savedItem = localStorage.getItem("savedState");
-    if (savedItem && editedImageId) {
-      const savedState = JSON.parse(savedItem) as EditorState;
-      if (savedState.imageId === editedImageId) {
-        setEditorState(savedState);
-      }
-    }
-  }, [editedImageId]);
 
   useEffect(() => {
     if (containerRef.current && editedImageId && data) {
@@ -88,12 +87,25 @@ const Editor: NextPage = () => {
       );
       const initialHeight = imageRatio * data.height;
       const initialWidth = imageRatio * data.width;
-      setEditorState((currentState) => ({
-        ...currentState,
-        imageId: editedImageId,
-        imageWidth: Math.round(initialWidth),
-        imageHeight: Math.round(initialHeight),
-      }));
+      setOriginalBounds({ width: initialWidth, height: initialHeight });
+
+      let loadedFromSave = false;
+      const savedItem = localStorage.getItem("savedState");
+      if (savedItem && editedImageId) {
+        const savedState = JSON.parse(savedItem) as EditorState;
+        if (savedState.imageId === editedImageId) {
+          setEditorState(savedState);
+          loadedFromSave = true;
+        }
+      }
+      if (!loadedFromSave) {
+        setEditorState((currentState) => ({
+          ...currentState,
+          imageId: editedImageId,
+          imageWidth: Math.round(initialWidth),
+          imageHeight: Math.round(initialHeight),
+        }));
+      }
     }
   }, [containerRef, editedImageId, data]);
 
@@ -111,10 +123,17 @@ const Editor: NextPage = () => {
       <main>
         <Title step={"Step 2"} title={"Edit Image"} />
         <div className="flex flex-col md:flex-row py-10 px-5">
-          <div className="flex-auto w-full md:w-8/12">
+          <div
+            className="flex-auto w-full md:w-8/12 flex items-center justify-center"
+            style={{ minHeight: 500 }}
+          >
             <div
-              className="rounded shadow w-full overflow-hidden"
-              style={{ height: 600 }}
+              className="rounded shadow w-full overflow-hidden mx-auto my-auto"
+              style={{
+                height: 600,
+                maxWidth: originalBounds.width,
+                maxHeight: originalBounds.height,
+              }}
               ref={containerRef}
             >
               <ImageEditor

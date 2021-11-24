@@ -39,7 +39,7 @@ const Home: NextPage = () => {
             >
               <div className="h-64 w-full relative">
                 <Image
-                  src={image.download_url}
+                  src={`https://picsum.photos/id/${image.id}/400`}
                   className="rounded-t"
                   alt={`Photo created by ${image.author}`}
                   layout="fill"
