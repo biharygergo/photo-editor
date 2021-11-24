@@ -225,7 +225,10 @@ const Editor: NextPage = () => {
             <Button
               text="Download"
               disabled={false}
-              onClick={() => downloadCallback.current?.()}
+              onClick={() => {
+                downloadCallback.current?.();
+                router.push("/success");
+              }}
               className="mt-auto py-5"
             />
           </motion.div>

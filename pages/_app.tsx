@@ -14,7 +14,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta name="description" content="Cool photo editor with canvas API" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <AnimateSharedLayout type="crossfade">
+      <AnimateSharedLayout>
         <AnimatePresence>
           <Component {...pageProps} />
         </AnimatePresence>
